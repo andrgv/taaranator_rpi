@@ -1,5 +1,5 @@
 echo "Updating package managers, python and main libraries..."
-sudo apt update && sudo apt install -y python3-pip python3-opencv python3-serial  python3-smbus i2c-tools git
+sudo apt update && sudo apt install -y python3-pip python3-opencv python3-serial  python3-smbus python3-spidev i2c-tools git
 
 echo "Installing python packages..."
 pip3 install -r requirements.txt
