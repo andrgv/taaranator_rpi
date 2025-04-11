@@ -4,43 +4,71 @@ from spi import SPI
 from motor import Motor
 from image import ObjectDetection
 from core.enums import Command
+from core.enums import Mode
 
 DISTANCE_THRESHOLD = 10 # cm TODO: change, these are just placeholders now
 ANGLE_THRESHOLD = 10 # degrees
+WALL_DISTANCE_THRESHOLD = 15 # cm
 
-# TODO: only trash detection mode now, need to implement trash deposition and mode switching
+
 def main():
     # Initialize SPI interface
     spi_interface = SPI(0, 0, 500000)
     motor = Motor(spi_interface)
     object_detection = ObjectDetection(camera_index=0)
 
+    current_mode = Mode.AIMLESS
+
     try:
         while True:
-            frame, detection = object_detection.detect_objects()
-            if frame is None:
-                print("Error capturing frame")
-                continue
-
-            if detection is not None:
-                print(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
-
-                if detection['distance'] < DISTANCE_THRESHOLD:
-                    if abs(detection['angle_x']) > ANGLE_THRESHOLD:
-                        if detection['angle_x'] > 0:
+            if current_mode == Mode.AIMLESS:
+                motor.move_forward()
+                frame, detection = object_detection.detect_objects()
+                if detection:
+                    print(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
+                    current_mode = Mode.TRASH_DETECTED
+            elif current_mode == Mode.TRASH_DETECTED:
+                frame, detection = object_detection.detect_objects()
+                if detection:
+                    if detection['distance'] < DISTANCE_THRESHOLD:
+                        print("Trash collected. Switching to BROOMING_AWAY mode")
+                        motor.stop()
+                        current_mode = Mode.BROOMING_AWAY
+                    else:
+                        if detection['angle_x'] > ANGLE_THRESHOLD:
+                            print("Rotating left towards trash")
+                            motor.move_left()
+                        elif detection['angle_x'] < -ANGLE_THRESHOLD:
+                            print("Rotating left towards trash")
                             motor.move_right()
                         else:
-                            motor.move_left()
-                    else:
-                        motor.stop()
-                        print("Stopping, object is close enough")
-                
-                cv2.imshow("Object Detection", frame)
-                # This is just a keyboard stop, we might want to change it a physical button
-                if cv2.waitKey(1) & 0xFF == ord('q'): 
-                    break
+                            print("Moving forward towards trash")
+                            motor.move_forward()
+                else:
+                    print("Lost track of object, reutrning to AIMLESS mode")
+                    current_mode = Mode.AIMLESS
+            elif current_mode == Mode.BROOMING_AWAY:
+                sensor_distance = spi_interface.send_command(Command.SENSOR.value)
+                print("Ultrasonic sensor distance: {sensor_distance} cm")
+                if sensor_distance <= WALL_DISTANCE_THRESHOLD:
+                    print("Wall reached, dropping off trash and switching to AIMLESS")
+                    motor.stop()
+                    motor.move_reverse()
+                    for i in range(5):
+                        motor.move_left()
+                        time.sleep(0.1)
+                    current_mode = Mode.AIMLESS
+                else:
+                    print("Moving forward to drop off trash")
+                    motor.move_forward()
 
-                time.sleep(0.1)
+            if current_mode in (Mode.AIMLESS, Mode.TRASH_DETECTED) and frame is not None:
+                cv2.imshow('Camera Feed', frame)
+            # TODO: turn keyboard interrupt to button interrupt
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+            time.sleep(0.1)
+
     except KeyboardInterrupt:
         print("Stopping program")
     finally:
@@ -48,3 +76,6 @@ def main():
         object_detection.release()
         spi_interface.close()
         cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()

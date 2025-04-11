@@ -12,7 +12,7 @@ FOCAL_LENGTH = 700 # pixels. TODO: is it though?
 HORIZONTAL_FOV = 60 # degrees. TODO: is it though?
 
 class ObjectDetection:
-    def __init__(self, camer_index=0):
+    def __init__(self, camera_index=0):
         self.cascade = cv2.CascadeClassifier('cascade.xml')
         if self.cascade.empty():
             raise Exception("Error loading cascade classifier")

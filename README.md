@@ -17,4 +17,4 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-This updates the system, downloads the necessary python libraries, enables I2C and SSH, and finally sets the main.py to be run forever using taaranator.service. It is a configuration file that systemd, Linux's start-up manager, will use. If a different directory or user clones it, the service file should be edited.
+This updates the system, downloads the necessary python libraries, enables SPI and SSH, and finally sets the main.py to be run forever using taaranator.service. It is a configuration file that systemd, Linux's start-up manager, will use. If a different directory or user clones it, the service file should be edited.
