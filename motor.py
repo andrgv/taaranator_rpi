@@ -36,7 +36,7 @@ class Motor:
     
     def sensor(self):
         response = self.spi_interface.send_command(Command.SENSOR.value)
-        if response <= 0:
+        if response == 0:
             raise Exception("Error reading sensor")
         return response
     

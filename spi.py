@@ -9,10 +9,6 @@ class SPI:
         self.spi.max_speed_hz = max_speed_hz
         self.spi.mode = 0b00
         self.spi.bits_per_word = 8
-        #  TODO: I don't think I need to set these defaults...
-        # self.spi.cshigh = False
-        # self.spi.lsbfirst = False
-        # self.spi.no_cs = False
     
     def send_command(self, command):
         char_to_send = ord(command)

@@ -21,53 +21,54 @@ def main():
 
     try:
         while True:
-            if current_mode == Mode.AIMLESS:
-                motor.move_forward()
-                frame, detection = object_detection.detect_objects()
-                if detection:
-                    print(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
-                    current_mode = Mode.TRASH_DETECTED
-            elif current_mode == Mode.TRASH_DETECTED:
-                frame, detection = object_detection.detect_objects()
-                if detection:
-                    if detection['distance'] < DISTANCE_THRESHOLD:
-                        print("Trash collected. Switching to BROOMING_AWAY mode")
-                        motor.stop()
-                        current_mode = Mode.BROOMING_AWAY
-                    else:
-                        if detection['angle_x'] > ANGLE_THRESHOLD:
-                            print("Rotating left towards trash")
-                            motor.move_left()
-                        elif detection['angle_x'] < -ANGLE_THRESHOLD:
-                            print("Rotating left towards trash")
-                            motor.move_right()
-                        else:
-                            print("Moving forward towards trash")
-                            motor.move_forward()
-                else:
-                    print("Lost track of object, reutrning to AIMLESS mode")
-                    current_mode = Mode.AIMLESS
-            elif current_mode == Mode.BROOMING_AWAY:
-                sensor_distance = spi_interface.send_command(Command.SENSOR.value)
-                print("Ultrasonic sensor distance: {sensor_distance} cm")
-                if sensor_distance <= WALL_DISTANCE_THRESHOLD:
-                    print("Wall reached, dropping off trash and switching to AIMLESS")
-                    motor.stop()
-                    motor.move_reverse()
-                    for i in range(5):
-                        motor.move_left()
-                        time.sleep(0.1)
-                    current_mode = Mode.AIMLESS
-                else:
-                    print("Moving forward to drop off trash")
+            match current_mode:
+                case Mode.AIMLESS:
                     motor.move_forward()
+                    frame, detection = object_detection.detect_objects()
+                    if detection:
+                        print(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
+                        current_mode = Mode.TRASH_DETECTED
+                case Mode.TRASH_DETECTED:
+                    frame, detection = object_detection.detect_objects()
+                    if detection:
+                        if detection['distance'] < DISTANCE_THRESHOLD:
+                            print("Trash collected. Switching to BROOMING_AWAY mode")
+                            motor.stop()
+                            current_mode = Mode.BROOMING_AWAY
+                        else:
+                            if detection['angle_x'] > ANGLE_THRESHOLD:
+                                print("Rotating left towards trash")
+                                motor.move_left()
+                            elif detection['angle_x'] < -ANGLE_THRESHOLD:
+                                print("Rotating left towards trash")
+                                motor.move_right()
+                            else:
+                                print("Moving forward towards trash")
+                                motor.move_forward()
+                    else:
+                        print("Lost track of object, reutrning to AIMLESS mode")
+                        current_mode = Mode.AIMLESS
+                case Mode.BROOMING_AWAY:
+                    sensor_distance = spi_interface.send_command(Command.SENSOR.value)
+                    print("Ultrasonic sensor distance: {sensor_distance} cm")
+                    if sensor_distance <= WALL_DISTANCE_THRESHOLD:
+                        print("Wall reached, dropping off trash and switching to AIMLESS")
+                        motor.stop()
+                        motor.move_reverse()
+                        for i in range(5):
+                            motor.move_left()
+                            time.sleep(0.1)
+                        current_mode = Mode.AIMLESS
+                    else:
+                        print("Moving forward to drop off trash")
+                        motor.move_forward()
 
             if current_mode in (Mode.AIMLESS, Mode.TRASH_DETECTED) and frame is not None:
                 cv2.imshow('Camera Feed', frame)
             # TODO: turn keyboard interrupt to button interrupt
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            time.sleep(0.1)
+            time.sleep(0.1) #TODO: might have to change this delay
 
     except KeyboardInterrupt:
         print("Stopping program")
