@@ -6,6 +6,18 @@ Contains logic for computer vision and control of the Taaranator robot.`
 
 Hardware requirements: Raspberry Pi 4, Arducam
 
+### Pins
+![Raspberry Pi pinout diagram](image.png)
+19: MOSI
+21: MISO
+23: SCK
+24: CS0
+20: GND to logic level shifter
+02: Cooling fan power // TODO: look at fan power rating
+06: Cooling fan gnd
+
+### Software
+
 Clone the repo to the Raspberry Pi 4:
 
 `git clone git@github.com:andrgv/taaranator_rpi.git`

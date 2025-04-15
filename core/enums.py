@@ -9,6 +9,6 @@ class Command(Enum):
     FORWARD = 'F'
     BACK = 'R'
     LEFT = 'L'
-    RIGHT = 'R'
+    RIGHT = 'D'
     STOP = 'B'
     SENSOR = 'S'
