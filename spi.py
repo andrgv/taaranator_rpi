@@ -12,6 +12,7 @@ class SPI:
     
     def send_command(self, command):
         char_to_send = ord(command)
+        print(f"Sending command: {command} ({char_to_send})")
         response = self.spi.xfer2([char_to_send])
         return response[0]
     
