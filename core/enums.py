@@ -7,8 +7,8 @@ class Mode(Enum):
 
 class Command(Enum):
     FORWARD = 'F'
-    BACK = 'R'
+    BACK = 'B'
     LEFT = 'L'
-    RIGHT = 'D'
-    STOP = 'B'
-    SENSOR = 'S'
+    RIGHT = 'R'
+    STOP = 'S'
+    SENSOR = 'D'
