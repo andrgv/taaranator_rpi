@@ -1,8 +1,11 @@
 import cv2
 
-print("Testing available video devices...\n")
-for i in range(32):
-    cap = cv2.VideoCapture(i)
-    ret, frame = cap.read()
-    print(f"/dev/video{i} opened: {cap.isOpened()}, frame captured: {ret}")
-    cap.release()
+print("Searching for available camera indices...")
+
+for index in range(10):  # Try indices 0 through 9
+    cap = cv2.VideoCapture(index)
+    if cap.read()[0]:
+        print(f"Camera found at index {index}")
+        cap.release()
+    else:
+        print(f"No camera at index {index}")
