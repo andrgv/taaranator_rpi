@@ -21,11 +21,8 @@ try:
         if ret:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"image_{timestamp}.jpg"
-            success = cv2.imwrite(filename, frame)
-            if success:
-                print(f"Captured {filename}")
-            else:
-                print(f"Failed to save {filename}")
+            cv2.imwrite(filename, frame)
+            print(f"Captured {filename}")
         else:
             print("Failed to capture image.")
         
