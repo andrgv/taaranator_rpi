@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 
 # Initialize the video capture object (0 is usually /dev/video0)
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(13)
 
 if not cap.isOpened():
     print("Failed to open the camera.")
