@@ -5,17 +5,24 @@ from motor import Motor
 from image import ObjectDetection
 from core.enums import Command
 from core.enums import Mode
+from core.logger import setup_logger
 
-DISTANCE_THRESHOLD = 10 # cm TODO: change, these are just placeholders now
+DISTANCE_THRESHOLD = 5 # cm TODO: change, these are just placeholders now
 ANGLE_THRESHOLD = 10 # degrees
-WALL_DISTANCE_THRESHOLD = 15 # cm
+WALL_DISTANCE_THRESHOLD = 20 # cm
 
 
 def main():
+    #Setup logger
+    logger = setup_logger(__name__)
+
     # Initialize SPI interface
     spi_interface = SPI(0, 0, 500000)
+    logger.info("SPI initialized")
     motor = Motor(spi_interface)
+    logger.info("Motors initialized")
     object_detection = ObjectDetection(camera_index=0)
+    logger.info("Object detection initialized")
 
     current_mode = Mode.AIMLESS
 
@@ -26,41 +33,39 @@ def main():
                     motor.move_forward()
                     frame, detection = object_detection.detect_objects()
                     if detection:
-                        print(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
+                        logger.info(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
                         current_mode = Mode.TRASH_DETECTED
                 case Mode.TRASH_DETECTED:
                     frame, detection = object_detection.detect_objects()
                     if detection:
                         if detection['distance'] < DISTANCE_THRESHOLD:
-                            print("Trash collected. Switching to BROOMING_AWAY mode")
+                            logger.info("Trash collected. Switching to BROOMING_AWAY mode")
                             motor.stop()
                             current_mode = Mode.BROOMING_AWAY
                         else:
                             if detection['angle_x'] > ANGLE_THRESHOLD:
-                                print("Rotating left towards trash")
+                                logger.info("Rotating left towards trash")
                                 motor.move_left()
                             elif detection['angle_x'] < -ANGLE_THRESHOLD:
-                                print("Rotating left towards trash")
+                                logger.info("Rotating left towards trash")
                                 motor.move_right()
                             else:
-                                print("Moving forward towards trash")
+                                logger.info("Moving forward towards trash")
                                 motor.move_forward()
                     else:
-                        print("Lost track of object, reutrning to AIMLESS mode")
+                        logger.info("Lost track of object, reutrning to AIMLESS mode")
                         current_mode = Mode.AIMLESS
                 case Mode.BROOMING_AWAY:
                     sensor_distance = spi_interface.send_command(Command.SENSOR.value)
-                    print("Ultrasonic sensor distance: {sensor_distance} cm")
+                    logger.info("Ultrasonic sensor distance: {sensor_distance} cm")
                     if sensor_distance <= WALL_DISTANCE_THRESHOLD:
-                        print("Wall reached, dropping off trash and switching to AIMLESS")
+                        logger.info("Wall reached, dropping off trash and switching to AIMLESS")
                         motor.stop()
                         motor.move_reverse()
-                        for i in range(5):
-                            motor.move_left()
-                            time.sleep(0.1)
+                        motor.move_left()
                         current_mode = Mode.AIMLESS
                     else:
-                        print("Moving forward to drop off trash")
+                        logger.info("Moving forward to drop off trash")
                         motor.move_forward()
 
             if current_mode in (Mode.AIMLESS, Mode.TRASH_DETECTED) and frame is not None:
@@ -71,7 +76,7 @@ def main():
             time.sleep(0.1) #TODO: might have to change this delay
 
     except KeyboardInterrupt:
-        print("Stopping program")
+        logger.info("Stopping program")
     finally:
         motor.stop()
         object_detection.release()

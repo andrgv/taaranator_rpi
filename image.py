@@ -35,7 +35,6 @@ class ObjectDetection:
         ret, frame = self.video.read()
         if not ret:
             return None, None
-        
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         objects = self.cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
 
@@ -44,6 +43,7 @@ class ObjectDetection:
             center_x = x + w // 2
             dist =self.compute_distance(w)
             angle_x = self.compute_angle(center_x, frame.shape[1])
+
             detected_info = {
                 'distance': dist,
                 'angle_x': angle_x,
@@ -51,6 +51,7 @@ class ObjectDetection:
                 'center_x': center_x,
                 'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
+            
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             loc_info = f"Distance: {dist:.2f} cm, Angle: {angle_x:.2f} degrees"
             cv2.putText(frame, loc_info, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
