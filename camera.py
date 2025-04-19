@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 # Initialize the video capture object (0 is usually /dev/video0)
-cap = cv2.VideoCapture(13)
+cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
     print("Failed to open the camera.")
@@ -23,7 +23,7 @@ try:
         ret, frame = cap.read()
         if ret:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"image_{timestamp}.jpg"
+            filename = f"data/image_{timestamp}.jpg"
             cv2.imwrite(filename, frame)
             print(f"Captured {filename}")
         else:
