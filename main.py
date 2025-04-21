@@ -47,7 +47,7 @@ def main():
                                 logger.info("Rotating left towards trash")
                                 motor.move_left()
                             elif detection['angle_x'] < -ANGLE_THRESHOLD:
-                                logger.info("Rotating left towards trash")
+                                logger.info("Rotating right towards trash")
                                 motor.move_right()
                             else:
                                 logger.info("Moving forward towards trash")

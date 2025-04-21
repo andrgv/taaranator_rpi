@@ -19,7 +19,7 @@ class ObjectDetection:
         self.camera_index = camera_index
         self.video = cv2.VideoCapture(self.camera_index)
         if not self.video.isOpened():
-            raise Exception("Error staring camera")
+            raise Exception("Error starting camera")
         
     def compute_distance(self, width):
         if width == 0:
