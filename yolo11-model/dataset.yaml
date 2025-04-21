@@ -1,0 +1,5 @@
+names:
+  0: Trash
+path: /home/andrea/ese3500/yolo11-model/yolo_dataset
+train: images/train
+val: images/val

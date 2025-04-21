@@ -1,1 +1,1 @@
-tflite-runtime
+onnxruntime
