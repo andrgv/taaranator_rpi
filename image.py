@@ -11,8 +11,8 @@ VERTICAL_FOV = math.degrees(2 * np.arctan2(IMG_HEIGHT / 2, FOCAL_LENGTH))  # deg
 
 class ObjectDetection:
     def __init__(self, camera_index=0):
-        model_path = "yolotrashv5-v1.onnx"
-        self.session = ort.InferenceSession(model_path)
+        model_path = "yolotrashv5-v1-fp16.onnx"
+        self.session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
 
         self.camera_index = camera_index
         self.video = cv2.VideoCapture(self.camera_index)
@@ -34,6 +34,7 @@ class ObjectDetection:
 
     def detect_objects(self):
         ret, frame = self.video.read()
+        print("video read")
         if not ret:
             return None, None
 
@@ -44,8 +45,10 @@ class ObjectDetection:
         img = np.transpose(img, (2, 0, 1))
         img = np.expand_dims(img, axis=0)
         input_tensor = np.ascontiguousarray(img)
-
+        
+        print("image preprocessed")
         outputs = self.session.run(None, {self.session.get_inputs()[0].name: input_tensor})
+        print("model actually output")
         detections = outputs[0][0]
 
         confidence_threshold = 0.5
@@ -53,8 +56,8 @@ class ObjectDetection:
         for det in detections:
             x1, y1, x2, y2, conf, cls = det
             if conf > confidence_threshold:
-                scale_x = original_w / 412
-                scale_y = original_h / 412
+                scale_x = original_w / 320
+                scale_y = original_h / 320
                 x1 = int(x1 * scale_x)
                 y1 = int(y1 * scale_y)
                 x2 = int(x2 * scale_x)
@@ -94,9 +97,11 @@ def main():
     detector = ObjectDetection()
     try:
         while True:
+            print("hello")
             frame, detected_info = detector.detect_objects()
             if frame is not None:
-                cv2.imshow("YOLO Object Detection", frame)
+                print("hi")
+                # cv2.imshow("YOLO Object Detection", frame)
 
             key = cv2.waitKey(1)
             if key == 27:  # ESC key to break
