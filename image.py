@@ -11,7 +11,7 @@ VERTICAL_FOV = math.degrees(2 * np.arctan2(IMG_HEIGHT / 2, FOCAL_LENGTH))  # deg
 
 class ObjectDetection:
     def __init__(self, camera_index=0):
-        model_path = "yolotrash-v1.onnx"
+        model_path = "yolotrashv5-v1.onnx"
         self.session = ort.InferenceSession(model_path)
 
         self.camera_index = camera_index
@@ -38,7 +38,7 @@ class ObjectDetection:
             return None, None
 
         original_h, original_w = frame.shape[:2]
-        resized_frame = cv2.resize(frame, (412, 412))
+        resized_frame = cv2.resize(frame, (320, 320))
         img = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
         img = img.astype(np.float32) / 255.0
         img = np.transpose(img, (2, 0, 1))
