@@ -1,0 +1,19 @@
+# Ignore all files in the yolo11-model directory
+yolo11-model/*
+
+# Do not ignore model.ipynb
+!yolo11-model/model.ipynb
+
+# Ignore virtual environment folders
+.venv/
+onnx-env/
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore environment-specific files
+*.env
