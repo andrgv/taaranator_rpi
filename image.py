@@ -8,10 +8,11 @@ REAL_OBJECT_WIDTH = 2.54  # cm
 FOCAL_LENGTH = (250 * 30) / REAL_OBJECT_WIDTH  # pixels
 IMG_HEIGHT = 320 # was 2448, scaled down to 320
 VERTICAL_FOV = math.degrees(2 * np.arctan2(IMG_HEIGHT / 2, FOCAL_LENGTH))  # degrees
+MODEL_PATH = "yolotrash-v4.onnx"
 
 class ObjectDetection:
     def __init__(self, camera_index=0):
-        model_path = "yolotrashv5-v1-fp16.onnx"
+        model_path = MODEL_PATH
         self.session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
 
         self.camera_index = camera_index
