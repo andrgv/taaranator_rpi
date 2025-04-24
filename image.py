@@ -6,7 +6,7 @@ import onnxruntime as ort
 
 REAL_OBJECT_WIDTH = 2.54  # cm
 FOCAL_LENGTH = (250 * 30) / REAL_OBJECT_WIDTH  # pixels
-IMG_HEIGHT = 2448
+IMG_HEIGHT = 320 # was 2448, scaled down to 320
 VERTICAL_FOV = math.degrees(2 * np.arctan2(IMG_HEIGHT / 2, FOCAL_LENGTH))  # degrees
 
 class ObjectDetection:
