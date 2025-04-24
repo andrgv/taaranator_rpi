@@ -24,7 +24,7 @@ class ObjectDetection:
     def compute_distance(self, height):
         if height == 0:
             return float('inf')
-        return (FOCAL_LENGTH * REAL_OBJECT_HEIGHT) / height
+        return (FOCAL_LENGTH * REAL_OBJECT_HEIGHT) / (height * 5) # 5 is hard-coded based on 
 
 
     def compute_angle(self, center_x, frame_width):
@@ -35,7 +35,6 @@ class ObjectDetection:
 
     def detect_objects(self):
         ret, frame = self.video.read()
-        print("video read")
         if not ret:
             return None, None
 
@@ -47,11 +46,7 @@ class ObjectDetection:
         img = np.expand_dims(img, axis=0)
         input_tensor = np.ascontiguousarray(img)
         
-        print("image preprocessed")
         outputs = self.session.run(None, {self.session.get_inputs()[0].name: input_tensor})
-        print("model actually output")
-        print("outputs[0] shape:", outputs[0].shape)
-        print("outputs[0] sample:", outputs[0].reshape(-1, outputs[0].shape[-1])[:5])  # Show first 5 detections
 
         # Adjust extraction based on output shape
         detections = outputs[0]
@@ -61,13 +56,10 @@ class ObjectDetection:
         if detections.shape[0] == 5:
             # (5, 2100) to (2100, 5)
             detections = detections.transpose(1, 0)
-        print("detections shape after transpose:", detections.shape)
 
         confidence_threshold = 0.5
         boxes = []
         for i, det in enumerate(detections):
-            if i < 5:
-                print("Detection raw:", det)
             cx, cy, width, height, conf = det[:5]
             if conf > confidence_threshold:
                 x1 = cx - width / 2
@@ -99,7 +91,6 @@ class ObjectDetection:
             label = f"Dist: {dist:.1f}cm, Angle: {angle_x:.1f}°"
             cv2.putText(frame, label, (x1, y1 - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-            print(label)
         else:
             detected_info = None
 
@@ -115,10 +106,8 @@ def main():
     detector = ObjectDetection()
     try:
         while True:
-            print("hello")
             frame, detected_info = detector.detect_objects()
             if frame is not None:
-                print("hi")
                 cv2.imshow("YOLO Object Detection", frame)
 
             key = cv2.waitKey(1)
