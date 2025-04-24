@@ -4,8 +4,8 @@ import math
 from datetime import datetime
 import onnxruntime as ort
 
-REAL_OBJECT_WIDTH = 2.54  # cm
-FOCAL_LENGTH = (250 * 30) / REAL_OBJECT_WIDTH  # pixels
+REAL_OBJECT_HEIGHT = 2.54  # cm
+FOCAL_LENGTH = (250 * 30) / REAL_OBJECT_HEIGHT  # pixels
 IMG_HEIGHT = 320 # was 2448, scaled down to 320
 VERTICAL_FOV = math.degrees(2 * np.arctan2(IMG_HEIGHT / 2, FOCAL_LENGTH))  # degrees
 MODEL_PATH = "yolotrash-v4.onnx"
@@ -21,10 +21,10 @@ class ObjectDetection:
             raise Exception("Error starting camera")
 
 
-    def compute_distance(self, width):
-        if width == 0:
+    def compute_distance(self, height):
+        if height == 0:
             return float('inf')
-        return (FOCAL_LENGTH * REAL_OBJECT_WIDTH) / width
+        return (FOCAL_LENGTH * REAL_OBJECT_HEIGHT) / height
 
 
     def compute_angle(self, center_x, frame_width):
@@ -39,7 +39,7 @@ class ObjectDetection:
         if not ret:
             return None, None
 
-        original_h, original_w = frame.shape[:2]
+        original_height, original_width = frame.shape[:2]
         resized_frame = cv2.resize(frame, (320, 320))
         img = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
         img = img.astype(np.float32) / 255.0
@@ -68,14 +68,14 @@ class ObjectDetection:
         for i, det in enumerate(detections):
             if i < 5:
                 print("Detection raw:", det)
-            cx, cy, w, h, conf = det[:5]
+            cx, cy, width, height, conf = det[:5]
             if conf > confidence_threshold:
-                x1 = cx - w / 2
-                y1 = cy - h / 2
-                x2 = cx + w / 2
-                y2 = cy + h / 2
-                scale_x = original_w / 320
-                scale_y = original_h / 320
+                x1 = cx - width / 2
+                y1 = cy - height / 2
+                x2 = cx + width / 2
+                y2 = cy + height / 2
+                scale_x = original_width / 320
+                scale_y = original_height / 320
                 x1 = int(x1 * scale_x)
                 y1 = int(y1 * scale_y)
                 x2 = int(x2 * scale_x)
@@ -84,14 +84,14 @@ class ObjectDetection:
 
         if boxes:
             x1, y1, x2, y2, conf, cls = boxes[0]
-            w, h = x2 - x1, y2 - y1
-            center_x = x1 + w // 2
-            dist = self.compute_distance(w)
-            angle_x = self.compute_angle(center_x, original_w)
+            width, height = x2 - x1, y2 - y1
+            center_x = x1 + width // 2
+            dist = self.compute_distance(height)
+            angle_x = self.compute_angle(center_x, original_width)
             detected_info = {
                 'distance': dist,
                 'angle_x': angle_x,
-                'rectangle': (x1, y1, w, h),
+                'rectangle': (x1, y1, width, height),
                 'center_x': center_x,
                 'time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
