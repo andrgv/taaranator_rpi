@@ -49,12 +49,28 @@ class ObjectDetection:
         print("image preprocessed")
         outputs = self.session.run(None, {self.session.get_inputs()[0].name: input_tensor})
         print("model actually output")
-        detections = outputs[0][0]
+        print("outputs[0] shape:", outputs[0].shape)
+        print("outputs[0] sample:", outputs[0].reshape(-1, outputs[0].shape[-1])[:5])  # Show first 5 detections
+
+        # Adjust extraction based on output shape
+        detections = outputs[0]
+        if len(detections.shape) == 4:
+            # (batch, channels, grid, grid) or similar, unlikely for YOLOv5 ONNX
+            detections = detections[0, 0, :, :]
+        elif len(detections.shape) == 3:
+            # (batch, num_boxes, attributes)
+            detections = detections[0]
+        elif len(detections.shape) == 2:
+            # (num_boxes, attributes)
+            detections = detections
+        else:
+            print("Unexpected output shape:", detections.shape)
+            return None, None
 
         confidence_threshold = 0.5
         boxes = []
         for det in detections:
-            x1, y1, x2, y2, conf, cls = det
+            x1, y1, x2, y2, conf, cls = det[:6]  # Only take the first 6 values
             if conf > confidence_threshold:
                 scale_x = original_w / 320
                 scale_y = original_h / 320
@@ -101,7 +117,7 @@ def main():
             frame, detected_info = detector.detect_objects()
             if frame is not None:
                 print("hi")
-                # cv2.imshow("YOLO Object Detection", frame)
+                cv2.imshow("YOLO Object Detection", frame)
 
             key = cv2.waitKey(1)
             if key == 27:  # ESC key to break
