@@ -7,9 +7,9 @@ from core.enums import Command
 from core.enums import Mode
 from core.logger import setup_logger
 
-DISTANCE_THRESHOLD = 5 # cm TODO: change, these are just placeholders now
-ANGLE_THRESHOLD = 10 # degrees
-WALL_DISTANCE_THRESHOLD = 20 # cm
+DISTANCE_THRESHOLD = 10 # cm
+ANGLE_THRESHOLD = 2 # degrees
+WALL_DISTANCE_THRESHOLD = 25 # cm
 
 
 def main():
@@ -33,15 +33,17 @@ def main():
                     motor.move_forward()
                     frame, detection = object_detection.detect_objects()
                     if detection:
-                        logger.info(f"{detection['time']}: Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
+                        logger.info(f"Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
                         current_mode = Mode.TRASH_DETECTED
+                        logger.info(f"Entering {current_mode} mode")
                 case Mode.TRASH_DETECTED:
                     frame, detection = object_detection.detect_objects()
                     if detection:
                         if detection['distance'] < DISTANCE_THRESHOLD:
-                            logger.info("Trash collected. Switching to BROOMING_AWAY mode")
+                            logger.info("Trash collected")
                             motor.stop()
                             current_mode = Mode.BROOMING_AWAY
+                            logger.info(f"Entering {current_mode} mode")
                         else:
                             if detection['angle_x'] > ANGLE_THRESHOLD:
                                 logger.info("Rotating left towards trash")
@@ -53,8 +55,8 @@ def main():
                                 logger.info("Moving forward towards trash")
                                 motor.move_forward()
                     else:
-                        logger.info("Lost track of object, reutrning to AIMLESS mode")
                         current_mode = Mode.AIMLESS
+                        logger.info("Lost track of object, returning to AIMLESS mode")
                 case Mode.BROOMING_AWAY:
                     sensor_distance = spi_interface.send_command(Command.SENSOR.value)
                     logger.info("Ultrasonic sensor distance: {sensor_distance} cm")
