@@ -55,31 +55,32 @@ class ObjectDetection:
 
         # Adjust extraction based on output shape
         detections = outputs[0]
-        if len(detections.shape) == 4:
-            # (batch, channels, grid, grid) or similar, unlikely for YOLOv5 ONNX
-            detections = detections[0, 0, :, :]
-        elif len(detections.shape) == 3:
-            # (batch, num_boxes, attributes)
-            detections = detections[0]
-        elif len(detections.shape) == 2:
-            # (num_boxes, attributes)
-            detections = detections
-        else:
-            print("Unexpected output shape:", detections.shape)
-            return None, None
+        if detections.shape[0] == 1 and detections.shape[1] == 5:
+            # (1, 5, 2100) to (5, 2100)
+            detections = detections.squeeze(0)
+        if detections.shape[0] == 5:
+            # (5, 2100) to (2100, 5)
+            detections = detections.transpose(1, 0)
+        print("detections shape after transpose:", detections.shape)
 
         confidence_threshold = 0.5
         boxes = []
-        for det in detections:
-            x1, y1, x2, y2, conf, cls = det[:6]  # Only take the first 6 values
+        for i, det in enumerate(detections):
+            if i < 5:
+                print("Detection raw:", det)
+            cx, cy, w, h, conf = det[:5]
             if conf > confidence_threshold:
+                x1 = cx - w / 2
+                y1 = cy - h / 2
+                x2 = cx + w / 2
+                y2 = cy + h / 2
                 scale_x = original_w / 320
                 scale_y = original_h / 320
                 x1 = int(x1 * scale_x)
                 y1 = int(y1 * scale_y)
                 x2 = int(x2 * scale_x)
                 y2 = int(y2 * scale_y)
-                boxes.append((x1, y1, x2, y2, conf, cls))
+                boxes.append((x1, y1, x2, y2, conf, 0))  # TODO: perhaps change the hardcoded class
 
         if boxes:
             x1, y1, x2, y2, conf, cls = boxes[0]
