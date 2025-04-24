@@ -4,6 +4,9 @@ yolo11-model/*
 # Do not ignore model.ipynb
 !yolo11-model/model.ipynb
 
+# Ignore all files in data directory
+data/*
+
 # Ignore virtual environment folders
 .venv/
 onnx-env/
