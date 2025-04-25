@@ -9,14 +9,10 @@ class Motor:
 
     def move_forward(self):
         response = self.spi_interface.send_command(Command.FORWARD.value)
-        if response != 0:
-            raise Exception("Error moving forward")
         return response
     
     def move_reverse(self):
         response = self.spi_interface.send_command(Command.BACK.value)
-        if response != 0:
-            raise Exception("Error moving reverse")
         return response
     
     def move_left(self, angle_deg=None):
@@ -37,14 +33,10 @@ class Motor:
     
     def stop(self):
         response = self.spi_interface.send_command(Command.STOP.value)
-        if response != 0:
-            raise Exception("Error stopping")
         return response
     
     def sensor(self):
         response = self.spi_interface.send_command(Command.SENSOR.value)
-        if response == 0:
-            raise Exception("Error reading sensor")
         return response
     
 def main():
