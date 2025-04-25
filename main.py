@@ -7,8 +7,8 @@ from core.enums import Command
 from core.enums import Mode
 from core.logger import setup_logger
 
-DISTANCE_THRESHOLD = 10 # cm
-ANGLE_THRESHOLD = 2 # degrees
+DISTANCE_THRESHOLD = 20 # cm
+ANGLE_THRESHOLD = 5 # degrees
 WALL_DISTANCE_THRESHOLD = 35 # cm
 ROTATING_ANGLE = 1
 
