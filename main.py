@@ -32,7 +32,7 @@ def main():
                 case Mode.AIMLESS:
                     # AIMLESS should be rotating
                     motor.move_left()
-                    time.sleep(0.5)
+                    time.sleep(10)
                     motor.stop()
                     frame, detection = object_detection.detect_objects()
                     if detection:
@@ -59,7 +59,7 @@ def main():
                                 motor.move_forward()
                     else:
                         current_mode = Mode.AIMLESS
-                        logger.info("Lost track of object, returning to {urrent_mode.name} mode")
+                        logger.info("Lost track of object, returning to {current_mode.name} mode")
                 case Mode.BROOMING_AWAY:
                     sensor_distance = spi_interface.send_command(Command.SENSOR.value)
                     logger.info("Ultrasonic sensor distance: {sensor_distance} cm")

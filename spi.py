@@ -12,7 +12,7 @@ class SPI:
     
     def send_command(self, command):
         char_to_send = ord(command)
-        print(f"{command} sent as {char_to_send}")
+        # print(f"{command} sent as {char_to_send}")
         response = self.spi.xfer2([char_to_send])
         return response[0]
     
@@ -23,37 +23,37 @@ def main():
    # Main function for testing purposes, will not actually run in actual system
     f_clk = 400000
     spi_interface = SPI(0,0,f_clk)
-    print(f"max sck speed set to {f_clk} Hz")
+    # print(f"max sck speed set to {f_clk} Hz")
     try:
         while(True):
             #send sendor command
             sensor = spi_interface.send_command(Command.SENSOR.value)
-            print(f"Sensor response: {sensor}") # should be 6.
+            # print(f"Sensor response: {sensor}") # should be 6.
             time.sleep(1) # should move for 1 sec
 
             #send move forward
             forward = spi_interface.send_command(Command.FORWARD.value)
-            print(f"Move forward response: {forward}") # should be 1. TODO: if time write actual tests
+            # print(f"Move forward response: {forward}") # should be 1. TODO: if time write actual tests
             time.sleep(1) # should move for 1 sec
 
             #send move reverse
             reverse = spi_interface.send_command(Command.BACK.value)
-            print(f"Move reverse response: {reverse}") # should be 2.
+            # print(f"Move reverse response: {reverse}") # should be 2.
             time.sleep(1) # should move for 1 sec
 
             #send move left
             left = spi_interface.send_command(Command.LEFT.value)
-            print(f"Move left response: {left}") # should be 4.
+            # print(f"Move left response: {left}") # should be 4.
             time.sleep(1) # should move for 1 sec
         
             #send move right
             right = spi_interface.send_command(Command.RIGHT.value)
-            print(f"Move right response: {right}") # should be 5.
+            # print(f"Move right response: {right}") # should be 5.
             time.sleep(1) # should move for 1 sec
         
             #send stop
             stop = spi_interface.send_command(Command.STOP.value)
-            print(f"Stop response: {stop}") # should be 3.
+            # print(f"Stop response: {stop}") # should be 3.
 
     except Exception as e:
         # handle errors in data transmission
