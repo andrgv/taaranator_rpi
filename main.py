@@ -55,12 +55,12 @@ def main():
                             if detection['angle_x'] > ANGLE_THRESHOLD:
                                 logger.info("Rotating left towards trash")
                                 motor.move_left()
-                                time.sleep(0.1)
+                                time.sleep(0.03)  # Reduced turn duration for finer control
                                 motor.stop()
                             elif detection['angle_x'] < -ANGLE_THRESHOLD:
                                 logger.info("Rotating right towards trash")
                                 motor.move_right()
-                                time.sleep(0.1)
+                                time.sleep(0.03)  # Reduced turn duration for finer control
                                 motor.stop()
                             else:
                                 logger.info("Moving forward towards trash")

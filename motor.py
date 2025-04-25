@@ -2,7 +2,7 @@ from core.enums import Command
 import time
 
 class Motor:
-    ANGULAR_VELOCITY_DEG_PER_SEC = 45
+    ANGULAR_VELOCITY_DEG_PER_SEC = 37.6
 
     def __init__(self, spi_interface):
         self.spi_interface = spi_interface
