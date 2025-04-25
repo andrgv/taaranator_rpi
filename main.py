@@ -41,9 +41,8 @@ def main():
                         current_mode = Mode.TRASH_DETECTED
                         logger.info(f"Entering {current_mode.name} mode")
                 case Mode.TRASH_DETECTED:
-                    frame, detection = object_detection.detect_objects()
                     if detection:
-                        logger.info(f"In TRASH_DETECTED, at distance {detection['distance']}  and angle {detection['angle']}")
+                        logger.info(f"In TRASH_DETECTED, at distance {detection['distance']}  and angle {detection['angle_x']}")
                         if detection['distance'] < DISTANCE_THRESHOLD:
                             motor.move_forward()
                             time.sleep(1)
@@ -64,6 +63,7 @@ def main():
                     else:
                         current_mode = Mode.AIMLESS
                         logger.info("Lost track of object, returning to AIMLESS mode")
+                    frame, detection = object_detection.detect_objects()
                 case Mode.BROOMING_AWAY:
                     sensor_distance = spi_interface.send_command(Command.SENSOR.value)
                     logger.info("Ultrasonic sensor distance: {sensor_distance} cm")
