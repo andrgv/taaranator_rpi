@@ -8,7 +8,7 @@ REAL_OBJECT_HEIGHT = 2.54  # cm
 FOCAL_LENGTH = (250 * 30) / REAL_OBJECT_HEIGHT  # pixels
 IMG_HEIGHT = 320 # was 2448, scaled down to 320
 VERTICAL_FOV = math.degrees(2 * np.arctan2(IMG_HEIGHT / 2, FOCAL_LENGTH))  # degrees
-MODEL_PATH = "yolotrashv4-int8.onnx"
+MODEL_PATH = "yolotrashv4-fp16.onnx"
 
 class ObjectDetection:
     def __init__(self, camera_index=0):
