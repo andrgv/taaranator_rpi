@@ -10,6 +10,7 @@ from core.logger import setup_logger
 DISTANCE_THRESHOLD = 10 # cm
 ANGLE_THRESHOLD = 2 # degrees
 WALL_DISTANCE_THRESHOLD = 25 # cm
+ROTATING_ANGLE = 1
 
 
 def main():
@@ -34,7 +35,7 @@ def main():
             match current_mode:
                 case Mode.AIMLESS:
                     # AIMLESS should be rotating
-                    motor.move_left(5)
+                    motor.move_left(ROTATING_ANGLE)
                     if detection:
                         logger.info(f"Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
                         current_mode = Mode.TRASH_DETECTED
@@ -51,11 +52,11 @@ def main():
                             logger.info(f"Entering BROOMING_AWAY mode")
                         else:
                             if detection['angle_x'] > ANGLE_THRESHOLD:
-                                logger.info("Rotating left towards trash")
-                                motor.move_left(2)
-                            elif detection['angle_x'] < -ANGLE_THRESHOLD:
                                 logger.info("Rotating right towards trash")
-                                motor.move_right(2)
+                                motor.move_right(ROTATING_ANGLE)
+                            elif detection['angle_x'] < -ANGLE_THRESHOLD:
+                                logger.info("Rotating left towards trash")
+                                motor.move_left(ROTATING_ANGLE)
                             else:
                                 logger.info("Moving forward towards trash")
                                 motor.move_forward()
