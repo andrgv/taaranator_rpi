@@ -30,12 +30,15 @@ def main():
         while True:
             match current_mode:
                 case Mode.AIMLESS:
-                    motor.move_forward()
+                    # AIMLESS should be rotating
+                    motor.move_left()
+                    time.sleep(0.5)
+                    motor.stop()
                     frame, detection = object_detection.detect_objects()
                     if detection:
                         logger.info(f"Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
                         current_mode = Mode.TRASH_DETECTED
-                        logger.info(f"Entering {current_mode} mode")
+                        logger.info(f"Entering {current_mode.name} mode")
                 case Mode.TRASH_DETECTED:
                     frame, detection = object_detection.detect_objects()
                     if detection:
@@ -43,7 +46,7 @@ def main():
                             logger.info("Trash collected")
                             motor.stop()
                             current_mode = Mode.BROOMING_AWAY
-                            logger.info(f"Entering {current_mode} mode")
+                            logger.info(f"Entering {current_mode.name} mode")
                         else:
                             if detection['angle_x'] > ANGLE_THRESHOLD:
                                 logger.info("Rotating left towards trash")
@@ -56,7 +59,7 @@ def main():
                                 motor.move_forward()
                     else:
                         current_mode = Mode.AIMLESS
-                        logger.info("Lost track of object, returning to AIMLESS mode")
+                        logger.info("Lost track of object, returning to {urrent_mode.name} mode")
                 case Mode.BROOMING_AWAY:
                     sensor_distance = spi_interface.send_command(Command.SENSOR.value)
                     logger.info("Ultrasonic sensor distance: {sensor_distance} cm")
@@ -64,8 +67,11 @@ def main():
                         logger.info("Wall reached, dropping off trash and switching to AIMLESS")
                         motor.stop()
                         motor.move_reverse()
+                        time.sleep(3)
                         motor.move_left()
+                        time.sleep(1) # TODO: figure out what angle it corresponds to
                         current_mode = Mode.AIMLESS
+                        logger.info(f"Entering {current_mode.name} mode")
                     else:
                         logger.info("Moving forward to drop off trash")
                         motor.move_forward()
@@ -75,7 +81,7 @@ def main():
             # TODO: turn keyboard interrupt to button interrupt
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            time.sleep(0.1) #TODO: might have to change this delay
+            time.sleep(0.2) #TODO: might have to change this delay
 
     except KeyboardInterrupt:
         logger.info("Stopping program")
