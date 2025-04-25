@@ -34,9 +34,7 @@ def main():
             match current_mode:
                 case Mode.AIMLESS:
                     # AIMLESS should be rotating
-                    motor.move_left()
-                    time.sleep(0.5)
-                    motor.stop()
+                    motor.move_left(5)
                     if detection:
                         logger.info(f"Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
                         current_mode = Mode.TRASH_DETECTED
@@ -54,14 +52,10 @@ def main():
                         else:
                             if detection['angle_x'] > ANGLE_THRESHOLD:
                                 logger.info("Rotating left towards trash")
-                                motor.move_left()
-                                time.sleep(0.03)  # Reduced turn duration for finer control
-                                motor.stop()
+                                motor.move_left(2)
                             elif detection['angle_x'] < -ANGLE_THRESHOLD:
                                 logger.info("Rotating right towards trash")
-                                motor.move_right()
-                                time.sleep(0.03)  # Reduced turn duration for finer control
-                                motor.stop()
+                                motor.move_right(2)
                             else:
                                 logger.info("Moving forward towards trash")
                                 motor.move_forward()
@@ -76,8 +70,7 @@ def main():
                         motor.stop()
                         motor.move_reverse()
                         time.sleep(3)
-                        motor.move_left()
-                        time.sleep(1) # TODO: figure out what angle it corresponds to
+                        motor.move_left(180) # Turn around
                         current_mode = Mode.AIMLESS
                         logger.info(f"Entering AIMLESS mode")
                     else:
