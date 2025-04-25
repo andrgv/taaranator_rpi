@@ -29,13 +29,14 @@ def main():
 
     try:
         while True:
+            frame, detection = object_detection.detect_objects()  # Only call once per loop
+
             match current_mode:
                 case Mode.AIMLESS:
                     # AIMLESS should be rotating
                     motor.move_left()
                     time.sleep(0.5)
                     motor.stop()
-                    frame, detection = object_detection.detect_objects()
                     if detection:
                         logger.info(f"Detected object at distance {detection['distance']} cm, angle {detection['angle_x']} degrees")
                         current_mode = Mode.TRASH_DETECTED
@@ -54,19 +55,22 @@ def main():
                             if detection['angle_x'] > ANGLE_THRESHOLD:
                                 logger.info("Rotating left towards trash")
                                 motor.move_left()
+                                time.sleep(0.1)
+                                motor.stop()
                             elif detection['angle_x'] < -ANGLE_THRESHOLD:
                                 logger.info("Rotating right towards trash")
                                 motor.move_right()
+                                time.sleep(0.1)
+                                motor.stop()
                             else:
                                 logger.info("Moving forward towards trash")
                                 motor.move_forward()
                     else:
                         current_mode = Mode.AIMLESS
                         logger.info("Lost track of object, returning to AIMLESS mode")
-                    frame, detection = object_detection.detect_objects()
                 case Mode.BROOMING_AWAY:
                     sensor_distance = spi_interface.send_command(Command.SENSOR.value)
-                    logger.info("Ultrasonic sensor distance: {sensor_distance} cm")
+                    logger.info(f"Ultrasonic sensor distance: {sensor_distance} cm")
                     if sensor_distance <= WALL_DISTANCE_THRESHOLD:
                         logger.info("Wall reached, dropping off trash and switching to AIMLESS")
                         motor.stop()
@@ -85,7 +89,7 @@ def main():
             # TODO: turn keyboard interrupt to button interrupt
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            time.sleep(10) #TODO: might have to change this delay
+            # Removed time.sleep(10) to improve responsiveness
 
     except KeyboardInterrupt:
         logger.info("Stopping program")
