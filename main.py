@@ -9,7 +9,7 @@ from core.logger import setup_logger
 
 DISTANCE_THRESHOLD = 10 # cm
 ANGLE_THRESHOLD = 2 # degrees
-WALL_DISTANCE_THRESHOLD = 25 # cm
+WALL_DISTANCE_THRESHOLD = 35 # cm
 ROTATING_ANGLE = 1
 
 
