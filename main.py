@@ -32,7 +32,7 @@ def main():
                 case Mode.AIMLESS:
                     # AIMLESS should be rotating
                     motor.move_left()
-                    time.sleep(10)
+                    time.sleep(0.5)
                     motor.stop()
                     frame, detection = object_detection.detect_objects()
                     if detection:
@@ -77,11 +77,11 @@ def main():
                         motor.move_forward()
 
             if current_mode in (Mode.AIMLESS, Mode.TRASH_DETECTED) and frame is not None:
-                cv2.imshow('Camera Feed', frame)
+                # cv2.imshow('Camera Feed', frame)
             # TODO: turn keyboard interrupt to button interrupt
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-            time.sleep(0.2) #TODO: might have to change this delay
+            time.sleep(10) #TODO: might have to change this delay
 
     except KeyboardInterrupt:
         logger.info("Stopping program")
