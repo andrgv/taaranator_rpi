@@ -10,6 +10,7 @@ data/*
 # Ignore virtual environment folders
 .venv/
 onnx-env/
+slenv/
 
 # Ignore Python bytecode files
 *.pyc
