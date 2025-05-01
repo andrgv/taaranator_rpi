@@ -1,32 +1,55 @@
 # Taaranator - Raspberry Pi Code
 
-Contains logic for computer vision and control of the Taaranator robot.`
+This repository contains the computer vision and control logic for the Taaranator robot, designed to run on a Raspberry Pi 4 with an Arducam camera.
 
-## Setup
+## Hardware Requirements
 
-Hardware requirements: Raspberry Pi 4, Arducam
+- Raspberry Pi 4
+- Arducam camera
+- Logic level shifter (for SPI)
 
-### Pins
+### Pinout
+
+| Pin | Function                    |
+|-----|-----------------------------|
+| 19  | MOSI                        |
+| 21  | MISO                        |
+| 23  | SCK                         |
+| 24  | CS0                         |
+| 20  | GND to logic level shifter  |
+
 ![Raspberry Pi pinout diagram](image.png)
-19: MOSI
-21: MISO
-23: SCK
-24: CS0
-20: GND to logic level shifter
-02: Cooling fan power // TODO: look at fan power rating
-06: Cooling fan gnd
 
-### Software
+## Software Setup
 
-Clone the repo to the Raspberry Pi 4:
+1. **Clone the repository:**
+    ```bash
+    git clone git@github.com:andrgv/taaranator_rpi.git
+    cd taaranator_rpi
+    ```
 
-`git clone git@github.com:andrgv/taaranator_rpi.git`
+2. **Make the setup script executable and run it:**
+    ```bash
+    chmod +x setup.sh
+    ./setup.sh
+    ```
 
-Next step is to make the setup bash script executable, and execute it:
+    This script will:
+    - Update the system and install required packages
+    - Create and activate a Python virtual environment (`slenv`)
+    - Install Python dependencies from `requirements.txt`
+    - Enable SPI and SSH via `raspi-config`
 
-```
-chmod +x setup.sh
-./setup.sh
-```
+3. **Running the code:**
 
-This updates the system, downloads the necessary python libraries, enables SPI and SSH, and finally sets the main.py to be run forever using taaranator.service. It is a configuration file that systemd, Linux's start-up manager, will use. If a different directory or user clones it, the service file should be edited.
+    After running the bash script, run the main python script:
+    ```
+    python main.py
+    ```
+
+    The `image.py` script will start the camera, run object detection using a YOLOv5 ONNX model, and display the results.
+
+## Notes
+
+- Ensure your camera is connected and enabled.
+- For troubleshooting model outputs and scipt behavior, refer to debug logs generated and stored in `logs_dir/`.

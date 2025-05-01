@@ -24,7 +24,7 @@ class ObjectDetection:
     def compute_distance(self, height):
         if height == 0:
             return float('inf')
-        return (FOCAL_LENGTH * REAL_OBJECT_HEIGHT) / (height * 5) # 5 is hard-coded based on 
+        return (FOCAL_LENGTH * REAL_OBJECT_HEIGHT) / (height * 5) # 5 is hard-coded based on expreietnal values
 
 
     def compute_angle(self, center_x, frame_width):
