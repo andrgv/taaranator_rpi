@@ -6,17 +6,15 @@ This repository contains the computer vision and control logic for the Taaranato
 
 - Raspberry Pi 4
 - Arducam camera
-- Logic level shifter (for SPI)
 
 ### Pinout
 
-| Pin | Function                    |
-|-----|-----------------------------|
-| 19  | MOSI                        |
-| 21  | MISO                        |
-| 23  | SCK                         |
-| 24  | CS0                         |
-| 20  | GND to logic level shifter  |
+| Pin | Function    |
+|-----|-------------|
+| 19  | MOSI        |
+| 21  | MISO        |
+| 23  | SCK         |
+| 24  | CS0         |
 
 ![Raspberry Pi pinout diagram](image.png)
 
